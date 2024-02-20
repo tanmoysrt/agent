@@ -4,6 +4,7 @@ import os
 import re
 import shlex
 import subprocess
+import uuid
 from subprocess import Popen
 
 import docker
@@ -17,6 +18,7 @@ class ImageBuilder(Base):
 	def __init__(self, filename: str, image_repository: str, image_tag: str, no_cache: bool, registry: dict,
 	             build_steps: dict) -> None:
 		super().__init__()
+		self.directory = os.getcwd()
 		self.config_file = os.path.join(self.directory, "config.json")
 		self.filename = filename
 		self.image_repository = image_repository
@@ -239,3 +241,10 @@ class ImageBuilder(Base):
 
 def get_image_build_context_directory():
 	return os.path.join(os.getcwd(), "build_context")
+
+def store_image_build_context(tarfile) -> str:
+	filename = f"{uuid.uuid4()}.tar"
+	path = os.path.join(get_image_build_context_directory(), filename)
+	with open(path, "wb") as f:
+		f.write(tarfile)
+	return filename
