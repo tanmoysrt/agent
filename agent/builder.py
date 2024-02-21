@@ -10,17 +10,15 @@ from subprocess import Popen
 import docker
 import dockerfile
 
-from agent.base import AgentException, Base
-from agent.job import job, Job
+from agent.base import AgentException
+from agent.job import job
+from agent.server import Server
 
 
-class ImageBuilder(Base):
+class ImageBuilder(Server):
 	def __init__(self, filename: str, image_repository: str, image_tag: str, no_cache: bool, registry: dict,
 	             build_steps: dict) -> None:
 		super().__init__()
-		self.directory = os.getcwd()
-		self.config_file = os.path.join(self.directory, "config.json")
-		self.job = None
 		self.filename = filename
 		self.image_repository = image_repository
 		self.image_tag = image_tag
@@ -30,12 +28,6 @@ class ImageBuilder(Base):
 		self.build_output = ""
 		self.docker_image_id = None
 		self._validate_registry()
-
-	@property
-	def job_record(self):
-		if self.job is None:
-			self.job = Job()
-		return self.job
 
 	def _validate_registry(self):
 		if not self.registry.get("url"):
