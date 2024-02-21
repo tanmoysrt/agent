@@ -11,7 +11,7 @@ import docker
 import dockerfile
 
 from agent.base import AgentException, Base
-from agent.job import job
+from agent.job import job, Job
 
 
 class ImageBuilder(Base):
@@ -20,6 +20,7 @@ class ImageBuilder(Base):
 		super().__init__()
 		self.directory = os.getcwd()
 		self.config_file = os.path.join(self.directory, "config.json")
+		self.job = None
 		self.filename = filename
 		self.image_repository = image_repository
 		self.image_tag = image_tag
@@ -29,6 +30,12 @@ class ImageBuilder(Base):
 		self.build_output = ""
 		self.docker_image_id = None
 		self._validate_registry()
+
+	@property
+	def job_record(self):
+		if self.job is None:
+			self.job = Job()
+		return self.job
 
 	def _validate_registry(self):
 		if not self.registry.get("url"):
