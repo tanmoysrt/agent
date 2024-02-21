@@ -45,7 +45,7 @@ class ImageBuilder(Base):
 		if not self.registry.get("password"):
 			raise AgentException("registry.password is required")
 
-	@job("Build And Push Image", priority="low", is_yielding_output=True)
+	@job("Build And Push Image", priority="high", is_yielding_output=True)
 	def build_and_push_image(self):
 		for o in self._build_image():
 			yield json.dumps(o)
