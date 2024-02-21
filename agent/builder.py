@@ -68,16 +68,12 @@ class ImageBuilder(Base):
 			{"DOCKER_BUILDKIT": "1", "BUILDKIT_PROGRESS": "plain", "PROGRESS_NO_TRUNC": "1"}
 		)
 		filepath = os.path.join(get_image_build_context_directory(), self.filename)
-		command = f"{command} -t {self._get_image_name()} --no-cache"
-		result = None
-		with open(filepath, "rb") as f:
-			result = self._run(
-				command,
-				environment,
-				stdin=f,
-			)
-		if not result:
-			raise AgentException("No output from docker build")
+		command = f"{command} -t {self._get_image_name()} --no-cache -"
+		result = self._run(
+			command,
+			environment,
+			input_filepath=filepath
+		)
 		return self._parse_docker_build_result(result)
 
 	def _parse_docker_build_result(self, result):
@@ -223,10 +219,13 @@ class ImageBuilder(Base):
 			"build_steps": self.build_steps,
 		}
 
-	def _run(self, command, environment=None, directory=None, stdin=None):
+	def _run(self, command, environment=None, directory=None, input_filepath=None):
+		input_file = None
+		if input_filepath:
+			input_file = open(input_filepath, "rb")
 		process = Popen(
 			shlex.split(command),
-			stdin=stdin,
+			stdin=input_file,
 			stdout=subprocess.PIPE,
 			stderr=subprocess.STDOUT,
 			env=environment,
@@ -237,6 +236,7 @@ class ImageBuilder(Base):
 			yield line
 		process.stdout.close()
 		return_code = process.wait()
+		input_file.close()
 		if return_code:
 			raise subprocess.CalledProcessError(return_code, command)
 
