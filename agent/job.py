@@ -51,7 +51,7 @@ class Action:
 
     @save
     def update_data(self, data):
-        self.model.data = data
+        self.model.data = json.dumps(data, default=str)
 
     @save
     def end(self):

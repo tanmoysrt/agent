@@ -48,9 +48,9 @@ class ImageBuilder(Base):
 	@job("Build And Push Image", priority="high", is_yielding_output=True)
 	def build_and_push_image(self):
 		for o in self._build_image():
-			yield json.dumps(o)
+			yield o
 		for o in self._push_docker_image():
-			yield json.dumps(o)
+			yield o
 
 	def _build_image(self):
 		import platform
