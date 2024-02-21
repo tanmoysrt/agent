@@ -227,8 +227,6 @@ class ImageBuilder(Base):
 			cwd=directory,
 			universal_newlines=True,
 		)
-		for lne in process.stderr:
-			print(lne)
 		for line in process.stdout:
 			yield line
 		process.stdout.close()
