@@ -220,7 +220,8 @@ class ImageBuilder(Base):
 
 	def _run(self, command, environment=None, directory=None):
 		process = Popen(
-			shlex.split(command),
+			# shlex.split(command),
+			command,
 			stdout=subprocess.PIPE,
 			stderr=subprocess.STDOUT,
 			env=environment,
