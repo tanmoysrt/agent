@@ -68,11 +68,16 @@ class ImageBuilder(Base):
 			{"DOCKER_BUILDKIT": "1", "BUILDKIT_PROGRESS": "plain", "PROGRESS_NO_TRUNC": "1"}
 		)
 		filepath = os.path.join(get_image_build_context_directory(), self.filename)
-		command = f"{command} -t {self._get_image_name()} --no-cache - < {filepath}"
-		result = self._run(
-			command,
-			environment,
-		)
+		command = f"{command} -t {self._get_image_name()} --no-cache"
+		result = None
+		with open(filepath, "rb") as f:
+			result = self._run(
+				command,
+				environment,
+				stdin=f,
+			)
+		if not result:
+			raise AgentException("No output from docker build")
 		return self._parse_docker_build_result(result)
 
 	def _parse_docker_build_result(self, result):
@@ -218,16 +223,15 @@ class ImageBuilder(Base):
 			"build_steps": self.build_steps,
 		}
 
-	def _run(self, command, environment=None, directory=None):
+	def _run(self, command, environment=None, directory=None, stdin=None):
 		process = Popen(
-			# shlex.split(command),
-			command,
+			shlex.split(command),
+			stdin=stdin,
 			stdout=subprocess.PIPE,
 			stderr=subprocess.STDOUT,
 			env=environment,
 			cwd=directory,
-			universal_newlines=True,
-			shell=True
+			universal_newlines=True
 		)
 		for line in process.stdout:
 			yield line
