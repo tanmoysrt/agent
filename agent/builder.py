@@ -54,7 +54,7 @@ class ImageBuilder(Base):
 
 	def _build_image(self):
 		import platform
-		command = "docker build"
+		command = "sudo docker build"
 		# check if it's running on apple silicon mac
 		if (
 				platform.machine() == "arm64"
