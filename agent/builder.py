@@ -226,6 +226,7 @@ class ImageBuilder(Base):
 			env=environment,
 			cwd=directory,
 			universal_newlines=True,
+			shell=True
 		)
 		for line in process.stdout:
 			yield line
