@@ -158,6 +158,8 @@ def database():
     from agent.job import JobModel, PatchLogModel, StepModel
     from agent.job import agent_database as database
 
+    print("Creating database tables...")
+
     database.create_tables([JobModel, StepModel, PatchLogModel])
     database.execute_sql("CREATE INDEX IF NOT EXISTS idx_jobmodel_agent_job_id ON jobmodel (agent_job_id)")
 
