@@ -9,7 +9,7 @@ import peewee
 
 
 class Database:
- def __init__(self, host, port, user, password, database):
+    def __init__(self, host, port, user, password, database):
         self.database_name = database
         self.db: CustomPeeweeDB = CustomPeeweeDB(database, user=user, password=password, host=host, port=port)
 
